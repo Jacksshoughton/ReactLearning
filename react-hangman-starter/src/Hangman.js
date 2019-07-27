@@ -7,6 +7,8 @@ import img3 from "./3.jpg";
 import img4 from "./4.jpg";
 import img5 from "./5.jpg";
 import img6 from "./6.jpg";
+import {randomWord} from './words.js';
+import AlphaButtons from './AlphaButtons';
 
 class Hangman extends Component {
   /** by default, allow 6 guesses and use provided gallows images. */
@@ -17,8 +19,9 @@ class Hangman extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { nWrong: 0, guessed: new Set(), answer: "apple" };
+    this.state = { nWrong: 0, guessed: new Set(), answer: randomWord() };
     this.handleGuess = this.handleGuess.bind(this);
+    this.resetGame = this.resetGame.bind(this);
   }
 
   /** guessedWord: show current-state of word:
@@ -42,27 +45,23 @@ class Hangman extends Component {
     }));
   }
 
-  /** generateButtons: return array of letter buttons to render */
-  generateButtons() {
-    return "abcdefghijklmnopqrstuvwxyz".split("").map(ltr => (
-      <button
-        value={ltr}
-        onClick={this.handleGuess}
-        disabled={this.state.guessed.has(ltr)}
-      >
-        {ltr}
-      </button>
-    ));
+
+
+  resetGame(){
+    this.setState({nWrong: 0, guessed: new Set(), answer: randomWord()});
   }
 
   /** render: render game */
   render() {
     return (
       <div className='Hangman'>
+        <button onClick={this.resetGame} id="Reset-button">Reset</button>
         <h1>Hangman</h1>
-        <img src={this.props.images[this.state.nWrong]} />
-        <p className='Hangman-word'>{this.guessedWord()}</p>
-        <p className='Hangman-btns'>{this.generateButtons()}</p>
+        
+        <img src={this.props.images[this.state.nWrong]} alt={`${this.state.nWrong} out of ${this.props.maxWrong} wrong guesses`}/>
+        <p className="Number-wrong">Number of wrong guesses: {this.state.nWrong}</p>
+        {this.state.nWrong == this.props.maxWrong ? <p>The Correct Word Was: <strong>{this.state.answer}</strong></p> : <p className='Hangman-word'>{this.guessedWord()}</p>}
+        {this.state.nWrong == this.props.maxWrong ? <p>You lose!!</p> : <AlphaButtons letters="abc"/>}
       </div>
     );
   }
